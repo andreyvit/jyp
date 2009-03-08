@@ -25,7 +25,7 @@ Decoding sample:
     assertEquals(11, map.get("y"));
     assertEquals(12, map.get("zzz"));
   
-To do this, just copy and paste JSON class into your project.
+Just copy and paste JSON class into your project to use it.
 
 
 Using JSON + BeanEncoder
@@ -60,3 +60,9 @@ Bean:
 A bean may reference other beans and may have constructor parameters. Please see the tests for more complex usage examples.
 
 To use BeanEncoder, you need to copy and paste the class into your project.
+
+
+Notes on JSON
+-------------
+
+When encoding a map, JSON class sorts the keys if they are all comparable. This means you can often rely on the order of keys being the same. This might be useful e.g. for testing and for hashing purposes.
