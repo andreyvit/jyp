@@ -39,7 +39,7 @@ public class BeanEncoding {
     }
     
     @Retention(RetentionPolicy.RUNTIME)
-    @Target( { PARAMETER })
+    @Target( { PARAMETER, METHOD })
     public @interface Property {
         
         String value();
@@ -230,11 +230,36 @@ public class BeanEncoding {
         for (Method method : klass.getMethods()) {
             String name = method.getName();
             if (isSetter(name)) {
-                String propertyName = propertyNameOf(name);
+                String beanPropertyName = propertyNameOf(name);
+                Property annotation = method.getAnnotation(Property.class);
+                if (annotation == null) {
+                    Method getter = findGetter(klass, beanPropertyName);
+                    if (getter != null)
+                        annotation = getter.getAnnotation(Property.class);
+                }
+                String propertyName = (annotation == null ? beanPropertyName : annotation.value());
                 setterByProperty.put(propertyName, method);
             }
         }
         return setterByProperty;
+    }
+    
+    private static <T> Method findGetter(Class<T> klass, String beanPropertyName) throws AssertionError {
+        String prefix = Character.toUpperCase(beanPropertyName.charAt(0)) + beanPropertyName.substring(1);
+        Method getter = null;
+        try {
+            getter = klass.getMethod("get" + prefix);
+        } catch (SecurityException e) {
+            throw new AssertionError(e);
+        } catch (NoSuchMethodException e) {
+            try {
+                getter = klass.getMethod("is" + prefix);
+            } catch (SecurityException e1) {
+                throw new AssertionError(e);
+            } catch (NoSuchMethodException e1) {
+            }
+        }
+        return getter;
     }
     
     private static <T> Map<String, Member> findPropertyGetters(Class<T> klass) {
@@ -244,7 +269,8 @@ public class BeanEncoding {
             if ("getClass".equals(name))
                 continue;
             if (isGetter(name)) {
-                String propertyName = propertyNameOf(name);
+                Property annotation = method.getAnnotation(Property.class);
+                String propertyName = (annotation == null ? propertyNameOf(name) : annotation.value());
                 getterByProperty.put(propertyName, method);
             }
         }
@@ -361,9 +387,11 @@ public class BeanEncoding {
             String key = entry.getKey();
             Member member = entry.getValue();
             Object value;
-            if (member instanceof Method)
+            if (member instanceof Method) {
+                if (((Method) member).isAnnotationPresent(Transient.class))
+                    continue;
                 value = getUsingMethod(bean, key, member);
-            else
+            } else
                 throw new AssertionError("Unreachable");
             map.put(key, simplify(value));
             
