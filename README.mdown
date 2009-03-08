@@ -1,0 +1,62 @@
+JYP: JSON, YAML and Plist for Java done right
+=============================================
+
+One-class implementations, no dependencies, simplest possible API.
+
+Warning: only JSON is implemented now, more to come.
+
+
+Using JSON
+----------
+
+Encoding sample:
+
+    Map<Object, Integer> c = new HashMap<Object, Integer>();
+    c.put("x", 10);
+    c.put("y", 11);
+    c.put("zzz", 12);
+    assertEquals("{\"x\":10,\"y\":11,\"zzz\":12}", JSON.encode(c));
+
+Decoding sample:
+
+    Map<?, ?> map = (Map<?, ?>) JSON.decode("{\"x\":10,\"y\":11,\"zzz\":12}");
+    assertEquals(3, map.size());
+    assertEquals(10, map.get("x"));
+    assertEquals(11, map.get("y"));
+    assertEquals(12, map.get("zzz"));
+  
+To do this, just copy and paste JSON class into your project.
+
+
+Using JSON + BeanEncoder
+------------------------
+
+Chances are you actually want to encode real Java classes rather than lists, maps and simple data types. For this you will need a second class called BeanEncoding. It translates Java beans into a map / list / simple data type representation and back.
+
+Encoding a bean:
+
+    SimpleBean bean = new SimpleBean();
+    bean.setFoo(42);
+    bean.setBar(6);
+    assertEquals("{\"bar\":6,\"foo\":42}", JSON.encode(BeanEncoding.simplify(bean)));
+
+Decoding a bean:
+
+    SimpleBean bean = BeanEncoding.beanify(JSON.decode("{\"bar\":6,\"foo\":42}"), SimpleBean.class);
+    assertEquals(42, bean.getFoo());
+    assertEquals(6, bean.getBar());
+    
+Bean:
+
+    public class SimpleBean {
+        int foo;
+        int bar;
+        public int getFoo() { return foo; }
+        public void setFoo(int foo) { this.foo = foo; }
+        public int getBar() { return bar; }
+        public void setBar(int bar) { this.bar = bar; }
+    }
+
+A bean may reference other beans and may have constructor parameters. Please see the tests for more complex usage examples.
+
+To use BeanEncoder, you need to copy and paste the class into your project.
