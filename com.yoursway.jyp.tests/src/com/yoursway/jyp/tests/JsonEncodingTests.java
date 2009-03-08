@@ -97,7 +97,7 @@ public class JsonEncodingTests {
     }
     
     @Test
-    public void array() {
+    public void list() {
         List<Object> c = new ArrayList<Object>();
         c.add(10);
         c.add("Foo");
@@ -106,8 +106,19 @@ public class JsonEncodingTests {
     }
     
     @Test
-    public void emptyArray() {
+    public void emptyList() {
         assertEquals("[]", JSON.encode(new ArrayList<Object>()));
+    }
+    
+    @Test
+    public void array() {
+        Object[] c = new Object[] { 10, "Foo", 45.4 };
+        assertEquals("[10,\"Foo\",45.4]", JSON.encode(c));
+    }
+    
+    @Test
+    public void emptyArray() {
+        assertEquals("[]", JSON.encode(new Object[0]));
     }
     
     @Test

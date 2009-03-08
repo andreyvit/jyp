@@ -8,12 +8,14 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +70,8 @@ public class BeanEncoding {
             return simplifyMap((Map<?, ?>) bean);
         if (bean instanceof Iterable<?>)
             return simplifyIterable((Iterable<?>) bean);
+        if (bean.getClass().isArray())
+            return simplifyIterable(Arrays.asList((Object[]) bean));
         try {
             return simplifyBean(bean);
         } catch (IntrospectionException e) {
@@ -145,6 +149,13 @@ public class BeanEncoding {
             return (T) beanify(value, Short.class);
         if (klass == char.class)
             return (T) beanify(value, Character.class);
+        
+        // handle arrays
+        if (klass.isArray()) {
+            List<Object> list = beanifyList(value, klass.getComponentType());
+            Object[] result = (Object[]) Array.newInstance(klass.getComponentType(), list.size());
+            return (T) list.toArray(result);
+        }
         
         // special handling for some types
         if (Number.class.isAssignableFrom(klass) && value instanceof Number) {

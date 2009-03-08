@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import com.yoursway.jyp.BeanEncoding;
 import com.yoursway.jyp.JSON;
+import com.yoursway.jyp.tests.beans.ArrayBean;
 import com.yoursway.jyp.tests.beans.ImmutableBean;
 import com.yoursway.jyp.tests.beans.MoreComplexBean;
 import com.yoursway.jyp.tests.beans.SimpleBean;
@@ -37,6 +38,14 @@ public class BeanEncodingTests {
         MoreComplexBean bean = new MoreComplexBean(children);
         bean.setX(11);
         assertEquals("{\"children\":[{\"bar\":6,\"foo\":42},{\"bar\":7,\"foo\":43}],\"x\":11}", JSON
+                .encode(BeanEncoding.simplify(bean)));
+    }
+    
+    @Test
+    public void arrayBean() {
+        ArrayBean bean = new ArrayBean(new ImmutableBean[] { new ImmutableBean(42, 6),
+                new ImmutableBean(43, 7) });
+        assertEquals("{\"children\":[{\"bar\":6,\"foo\":42},{\"bar\":7,\"foo\":43}]}", JSON
                 .encode(BeanEncoding.simplify(bean)));
     }
     

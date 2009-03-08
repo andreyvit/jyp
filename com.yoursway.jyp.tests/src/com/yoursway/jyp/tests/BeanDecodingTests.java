@@ -8,6 +8,7 @@ import com.yoursway.jyp.BeanEncoding;
 import com.yoursway.jyp.JSON;
 import com.yoursway.jyp.BeanEncoding.BeanificationException;
 import com.yoursway.jyp.JSON.SyntaxError;
+import com.yoursway.jyp.tests.beans.ArrayBean;
 import com.yoursway.jyp.tests.beans.ImmutableBean;
 import com.yoursway.jyp.tests.beans.MoreComplexBean;
 import com.yoursway.jyp.tests.beans.SimpleBean;
@@ -39,6 +40,17 @@ public class BeanDecodingTests {
         assertEquals(6, bean.getChildren().get(0).getBar());
         assertEquals(43, bean.getChildren().get(1).getFoo());
         assertEquals(7, bean.getChildren().get(1).getBar());
+    }
+    
+    @Test
+    public void arrayBean() throws BeanificationException, SyntaxError {
+        ArrayBean bean = BeanEncoding.beanify(JSON
+                .decode("{\"children\":[{\"bar\":6,\"foo\":42},{\"bar\":7,\"foo\":43}]}"), ArrayBean.class);
+        assertEquals(2, bean.getChildren().length);
+        assertEquals(42, bean.getChildren()[0].getFoo());
+        assertEquals(6, bean.getChildren()[0].getBar());
+        assertEquals(43, bean.getChildren()[1].getFoo());
+        assertEquals(7, bean.getChildren()[1].getBar());
     }
     
 }
