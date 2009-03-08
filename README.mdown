@@ -19,12 +19,16 @@ Encoding sample:
 
 Decoding sample:
 
-    Map<?, ?> map = (Map<?, ?>) JSON.decode("{\"x\":10,\"y\":11,\"zzz\":12}");
-    assertEquals(3, map.size());
-    assertEquals(10, map.get("x"));
-    assertEquals(11, map.get("y"));
-    assertEquals(12, map.get("zzz"));
-  
+    try {
+      Map<?, ?> map = (Map<?, ?>) JSON.decode("{\"x\":10,\"y\":11,\"zzz\":12}");
+      assertEquals(3, map.size());
+      assertEquals(10, map.get("x"));
+      assertEquals(11, map.get("y"));
+      assertEquals(12, map.get("zzz"));
+    } catch (JSON.SyntaxError e) {
+      // handle invalid JSON here
+    }
+    
 Just copy and paste JSON class into your project to use it.
 
 
@@ -42,9 +46,15 @@ Encoding a bean:
 
 Decoding a bean:
 
-    SimpleBean bean = BeanEncoding.beanify(JSON.decode("{\"bar\":6,\"foo\":42}"), SimpleBean.class);
-    assertEquals(42, bean.getFoo());
-    assertEquals(6, bean.getBar());
+    try {
+      SimpleBean bean = BeanEncoding.beanify(JSON.decode("{\"bar\":6,\"foo\":42}"), SimpleBean.class);
+      assertEquals(42, bean.getFoo());
+      assertEquals(6, bean.getBar());
+    } catch (JSON.SyntaxError e) {
+      // handle invalid JSON here
+    } catch (BeanEncoding.BeanificationException e) {
+      // JSON does not match your beans, handle it (idea: try decoding an older version of your model)
+    }
     
 Bean:
 
