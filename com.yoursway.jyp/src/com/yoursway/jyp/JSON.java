@@ -51,13 +51,13 @@ public class JSON {
         else if (value instanceof Character)
             encodeString(value.toString(), result);
         else if (value instanceof Float)
-        	result.append(encodeFloat((Float) value));
+            result.append(encodeFloat((Float) value));
         else if (value instanceof Double)
             result.append(encodeDouble((Double) value));
         else if (value instanceof Number)
             result.append(encodeNumber((Number) value));
         else if (value instanceof Boolean)
-            result.append(encodeBoolean((boolean) (Boolean) value));
+            result.append(encodeBoolean((Boolean) value));
         else if (value instanceof Map<?, ?>)
             encodeMap((Map<?, ?>) value, result);
         else if (value instanceof Iterable<?>)
@@ -146,13 +146,13 @@ public class JSON {
     private static void encodeMap(Map<?, ?> map, Appendable result) throws IOException {
         result.append('{');
         boolean first = true;
-        List<Map.Entry<?, ?>> entries = new ArrayList<Map.Entry<?,?>>(map.entrySet());
+        List<Map.Entry<?, ?>> entries = new ArrayList<Map.Entry<?, ?>>(map.entrySet());
         try {
-        	Collections.sort(entries, ENTRY_KEY_COMPARATOR);
+            Collections.sort(entries, ENTRY_KEY_COMPARATOR);
         } catch (ClassCastException e) {
-        	// uncomparable, go unsorted
+            // uncomparable, go unsorted
         }
-		for (Map.Entry<?, ?> entry : entries) {
+        for (Map.Entry<?, ?> entry : entries) {
             if (first)
                 first = false;
             else
@@ -199,13 +199,13 @@ public class JSON {
         return s;
     }
     
-    final static Comparator<Map.Entry<?, ?>> ENTRY_KEY_COMPARATOR = new Comparator<Entry<?,?>>(){
-	
-		@SuppressWarnings("unchecked")
-		public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
-			return ((Comparable<Object>) o1.getKey()).compareTo(o2.getKey());
-		}
-	};
+    final static Comparator<Map.Entry<?, ?>> ENTRY_KEY_COMPARATOR = new Comparator<Entry<?, ?>>() {
+        
+        @SuppressWarnings("unchecked")
+        public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
+            return ((Comparable<Object>) o1.getKey()).compareTo(o2.getKey());
+        }
+    };
     
 }
 
@@ -485,6 +485,8 @@ class JSONTokener {
         String s;
         
         switch (c) {
+        case 0:
+            throw new JSON.SyntaxError("JSON is empty", index);
         case '"':
         case '\'':
             return nextString(c);
